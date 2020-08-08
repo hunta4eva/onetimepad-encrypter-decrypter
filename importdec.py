@@ -1,116 +1,133 @@
-"""The keys and the counter for which keys to use are in text files, named 'keys.txt' and 'kcounter.txt' respectively
-The last number in the 'kcounter.txt' file is the counter that is used find the corresponding key for encryption
-The ciphertext from the onetimepad has 5 digits added to it, the first 4 are the counter for the key and the last is a random digit
-The counter is incremented by 1 with every encryption and decryption"""
-
-from random import choice
 import onetimepad
 import pyperclip
+import random
 
-def main():
-    while True:
-        try:
-            menu_choice = input('\n1: Encrypt a message \n2: Decrypt a message \n\nEnter your option: ')
-            if int(menu_choice) == 1:
-                encrypt(input('\nEnter a message:   \033[92m'))
-            if int(menu_choice) == 2:
-                decrypt()
-        except ValueError:
-            print(f"\n\033[91mError:'{menu_choice}' is an invalid option\033[00m")
+key = ''
+string_counter = ''
+msg = ''
+nmsg = ''
+flag = 0
 
-def half_encrypt(i, number, char_1, char_2, char_3):
-    if i == number:
-        return choice([char_1, char_2, char_3])
+def sim_decryp(var, var_1, var_2, var_3):
+    global msg; global nmsg; global flag
+    if i == var_1 or i == var_2 or i == var_3:
+        nmsg += var
     else:
-        return ''
+        flag += 1
+        
 
-def half_decrypt(i, number, char_1, char_2, char_3):
-    if i == char_1 or i == char_2 or i == char_3:
-        return number
+def sim_encryp(var, var_1, var_2, var_3):
+    global msg; global nmsg; global flag
+    if i == var:
+        nmsg += random.choice([var_1, var_2, var_3])
     else:
-        return ''
+        flag += 1
+        
 
-def half_encrypt_loop(plaintext):
-    ciphertext = ''
-    for i in plaintext:
-        ciphertext += half_encrypt(i,'0','$','<','!')
-        ciphertext += half_encrypt(i,'1','&','>',';')
-        ciphertext += half_encrypt(i,'2','%','=','(')
-        ciphertext += half_encrypt(i,'3','@',')',':')
-        ciphertext += half_encrypt(i,'4','+',']','-')
-        ciphertext += half_encrypt(i,'5','~',',','?')
-        ciphertext += half_encrypt(i,'6','^','|','/')
-        ciphertext += half_encrypt(i,'7','{','`','_')
-        ciphertext += half_encrypt(i,'8','}','.','}')
-        ciphertext += half_encrypt(i,'9',' ',' ',' ')
-        if i in 'abcdef':
-            ciphertext += i
-    return ciphertext
+def decrypt_counter(cipher_text):
+    global key
+    k = 0
+    counter = int(cipher_text[-5:-1])
+    cipher = open('key.txt')
+    for i in cipher:
+        if k == counter:
+            key = i
+        k += 1
+    ncounter = counter + 1
+    ncounter = str(ncounter)
+    cout = open('kcounter.txt','a+')
+    cout.write("\n")
+    cout.write(ncounter)
+    f = cout.read()
+    cipher.close
+    cout.close
 
-def half_decrypt_loop(ciphertext):
-    plaintext = ''
-    for i in ciphertext:
-        plaintext += half_decrypt(i,'0','$','<','!')
-        plaintext += half_decrypt(i,'1','&','>',';')
-        plaintext += half_decrypt(i,'2','%','=','(')
-        plaintext += half_decrypt(i,'3','@',')',':')
-        plaintext += half_decrypt(i,'4','+',']','-')
-        plaintext += half_decrypt(i,'5','~',',','?')
-        plaintext += half_decrypt(i,'6','^','|','/')
-        plaintext += half_decrypt(i,'7','{','`','_')
-        plaintext += half_decrypt(i,'8','}','.','}')
-        plaintext += half_decrypt(i,'9',' ',' ',' ')
-        if i in 'abcdef':
-            plaintext += i
-    return plaintext
-
-def encrypt(plaintext):
-    print('\033[00m')
-    k, counter = 0, ''
-
-    with open('kcounter.txt') as get_counter:
-        for i in get_counter:
+for i in range(1000):
+    nmsg = ''
+    f = int(input("\n1: Encrypt a message \n2: Decrypt a message \n\nEnter your option: "))
+    
+    if f == 1:
+        msg = input("\nEnter a message:  ")
+        k = 0
+        counter = ""
+        
+        encryp = open('kcounter.txt')
+        for i in encryp:
             counter = i
-    new_counter = str(int(counter)+1)
-    string_counter = counter.rjust(4, '0')
+        encryp.close
 
-    with open('kcounter.txt','a+') as append_counter:
-        append_counter.write(f'\n{new_counter}')
-        placeholder = append_counter.read()
+        scounter = int(counter) + 1
+        ncounter = str(scounter)
+    
+        if len(counter) == 1:
+            string_counter = '000' + counter
+        if len(counter) == 2:
+            string_counter = '00' + counter
+        if len(counter) == 3:
+            string_counter = '0' + counter
+        if len(counter) == 4:
+            string_counter = ncounter
 
-    with open('key.txt') as get_key:
-        for i in get_key:
-            if k == int(counter):
+        encryp = open('kcounter.txt','a+')
+        encryp.write('\n')
+        encryp.write(ncounter)
+        f = encryp.read()
+        encryp.close
+        
+        k = 0
+        
+        cipher = open('key.txt')
+        for i in cipher:
+            if k == int(counter):        
                 key = i
             k+=1
+        msg = onetimepad.encrypt(msg, key)
+        
+        msg = msg + string_counter + random.choice(['1','2','3','4','5','6','7','8','0'])
 
-    plaintext = onetimepad.encrypt(plaintext, key)
-    plaintext += string_counter + str(choice(range(9)))
-    ciphertext = half_encrypt_loop(plaintext)
-    print(f'Encoded Message:   \033[93m{ciphertext}\033[00m'); pyperclip.copy(ciphertext)
+        for i in msg:
+            flag = 0
 
-def decrypt():
-    k = 0
-    ciphertext = pyperclip.paste()
-    plaintext = half_decrypt_loop(ciphertext)
-    print(f'\nEncoded Message:   \033[93m{plaintext}\033[00m')
-    counter = int(plaintext[-5:-1])
+            sim_encryp('0','$','<','!')
+            sim_encryp('1','&','>',';')
+            sim_encryp('2','%','=','(')
+            sim_encryp('3','@',')',':')
+            sim_encryp('4','+',']','-')
+            sim_encryp('5','~',',','?')
+            sim_encryp('6','^','|','/')
+            sim_encryp('7','{','`','_')
+            sim_encryp('8','}','.','}')
+            sim_encryp('9',' ',' ',' ')
+            if flag == 10:
+                nmsg += i
+        
+        pyperclip.copy(nmsg)
+        print(nmsg)
 
-    with open('key.txt') as get_key:
-        for i in get_key:
-            if k == counter:
-                key = i
-            k += 1
-    new_counter = str(counter+1)
-
-    with open('kcounter.txt','a+') as append_counter:
-        append_counter.write(f'\n{new_counter}')
-        placeholder = append_counter.read()
-
-    plaintext = plaintext[0:len(plaintext)-5]
-    plaintext = onetimepad.decrypt(plaintext,key)
-    print(f'\nDecoded Message:   \033[92m{plaintext}\033[00m')
-
-if __name__ == '__main__':
-    main()
-
+    elif f == 2:
+        nmsg = ''
+        msg = pyperclip.paste()
+        
+        for i in msg:
+            flag = 0
+            sim_decryp('0','$','<','!')
+            sim_decryp('1','&','>',';')
+            sim_decryp('2','%','=','(')
+            sim_decryp('3','@',')',':')
+            sim_decryp('4','+',']','-')
+            sim_decryp('5','~',',','?')
+            sim_decryp('6','^','|','/')
+            sim_decryp('7','{','`','_')
+            sim_decryp('8','}','.','}')
+            sim_decryp('9',' ',' ',' ')
+            if flag == 10:
+                nmsg += i
+            
+        print(nmsg)
+        msg = nmsg
+        decrypt_counter(msg)
+        minus_length = len(msg)-5
+        msg = msg[0:minus_length]
+        msg = onetimepad.decrypt(msg, key)
+        print("\nDecoded Message:  %s"%msg)
+    
