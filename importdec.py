@@ -12,11 +12,11 @@ def main():
         try:
             menu_choice = input('\n1: Encrypt a message \n2: Decrypt a message \n\nEnter your option: ')
             if int(menu_choice) == 1:
-                encrypt(input('\nEnter a message:   \033[92m'))
+                encrypt(input('\nEnter a message:   '))
             if int(menu_choice) == 2:
                 decrypt()
         except ValueError:
-            print(f"\n\033[91mError:'{menu_choice}' is an invalid option\033[00m")
+            print(f"\nError:'{menu_choice}' is an invalid option")
 
 def half_encrypt(i, number, char_1, char_2, char_3):
     if i == number:
@@ -65,7 +65,6 @@ def half_decrypt_loop(ciphertext):
     return plaintext
 
 def encrypt(plaintext):
-    print('\033[00m')
     k, counter = 0, ''
 
     with open('kcounter.txt') as get_counter:
@@ -87,13 +86,12 @@ def encrypt(plaintext):
     plaintext = onetimepad.encrypt(plaintext, key)
     plaintext += string_counter + str(choice(range(9)))
     ciphertext = half_encrypt_loop(plaintext)
-    print(f'Encoded Message:   \033[93m{ciphertext}\033[00m'); pyperclip.copy(ciphertext)
+    print(f'Encoded Message:   {ciphertext}); pyperclip.copy(ciphertext)
 
 def decrypt():
     k = 0
     ciphertext = pyperclip.paste()
     plaintext = half_decrypt_loop(ciphertext)
-    print(f'\nEncoded Message:   \033[93m{plaintext}\033[00m')
     counter = int(plaintext[-5:-1])
 
     with open('key.txt') as get_key:
@@ -109,7 +107,7 @@ def decrypt():
 
     plaintext = plaintext[0:len(plaintext)-5]
     plaintext = onetimepad.decrypt(plaintext,key)
-    print(f'\nDecoded Message:   \033[92m{plaintext}\033[00m')
+    print(f'\nDecoded Message:   {plaintext}')
 
 if __name__ == '__main__':
     main()
