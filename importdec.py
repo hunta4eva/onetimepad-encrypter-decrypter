@@ -72,15 +72,7 @@ def encrypt(plaintext):
         for i in get_counter:
             counter = i
     new_counter = str(int(counter)+1)
-
-    if len(counter) == 1:
-        string_counter = '000' + counter
-    if len(counter) == 2:
-        string_counter = '00' + counter
-    if len(counter) == 3:
-        string_counter = '0' + counter
-    if len(counter) == 4:
-        string_counter = counter
+    string_counter = counter.rjust(4, '0')
 
     with open('kcounter.txt','a+') as append_counter:
         append_counter.write(f'\n{new_counter}')
