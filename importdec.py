@@ -1,7 +1,7 @@
 """The keys and the counter for which keys to use are in text files, named 'keys.txt' and 'kcounter.txt' respectively
 The last number in the 'kcounter.txt' file is the counter that is used find the corresponding key for encryption
 The ciphertext from the onetimepad has 5 digits added to it, the first 4 are the counter for the key and the last is a random digit
-The counter is incremented by 1 with every encryption and decryption"""
+The counter is incremented by 1 with every encryption and decryption.  """
 
 from random import choice
 import onetimepad
