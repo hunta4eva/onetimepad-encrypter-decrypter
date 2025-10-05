@@ -2,7 +2,7 @@
 The last number in the 'kcounter.txt' file is the counter that is used find the corresponding key for encryption
 The ciphertext from the onetimepad has 5 digits added to it, the first 4 are the counter for the key and the last is a random digit
 The counter is incremented by 1 with every encryption and decryption.  """
-
+"Testing git push"
 from random import choice
 import onetimepad
 import pyperclip
