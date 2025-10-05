@@ -4,6 +4,8 @@ The ciphertext from the onetimepad has 5 digits added to it, the first 4 are the
 The counter is incremented by 1 with every encryption and decryption.  """
 "Testing git push"
 "third/second test of git push"
+"fourth commit"
+
 from random import choice
 import onetimepad
 import pyperclip
